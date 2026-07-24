@@ -4,7 +4,9 @@
 //! Malformed entries fall back to [`AppConfig::default()`] values with logged warnings.
 
 use crate::core::error::ConfigError;
-use crate::models::config::{AccountViewMode, AppConfig, FontSize, Language, Theme, UpdateChannel};
+use crate::models::config::{
+    AccountViewMode, AppConfig, DefaultLoginView, FontSize, Language, Theme, UpdateChannel,
+};
 use crate::models::session::Region;
 use std::collections::HashMap;
 
@@ -111,6 +113,9 @@ pub fn parse_ini(input: &str) -> Result<AppConfig, ConfigError> {
         if let Some(v) = general.get("cafe_mode") {
             config.cafe_mode = parse_bool(v, "cafe_mode", defaults.cafe_mode);
         }
+        if let Some(v) = general.get("default_login_view") {
+            config.default_login_view = parse_default_login_view(v);
+        }
     }
 
     // --- [game] ---
@@ -212,6 +217,10 @@ pub fn serialize_ini(config: &AppConfig) -> String {
         config.beanfun_rename_dismissed
     ));
     out.push_str(&format!("cafe_mode = {}\n", config.cafe_mode));
+    out.push_str(&format!(
+        "default_login_view = {}\n",
+        default_login_view_to_str(&config.default_login_view)
+    ));
     out.push('\n');
 
     // [game]
@@ -433,6 +442,24 @@ fn close_behavior_to_str(mode: &crate::models::config::CloseBehavior) -> &'stati
     }
 }
 
+fn parse_default_login_view(value: &str) -> DefaultLoginView {
+    match value.to_lowercase().as_str() {
+        "normal" => DefaultLoginView::Normal,
+        "qr" => DefaultLoginView::Qr,
+        _ => {
+            tracing::warn!("unknown default_login_view '{value}', falling back to default");
+            DefaultLoginView::Normal
+        }
+    }
+}
+
+fn default_login_view_to_str(view: &DefaultLoginView) -> &'static str {
+    match view {
+        DefaultLoginView::Normal => "normal",
+        DefaultLoginView::Qr => "qr",
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Unit tests
 // ---------------------------------------------------------------------------
@@ -537,6 +564,7 @@ x = not_a_number
             hide_account_names: true,
             beanfun_rename_dismissed: true,
             cafe_mode: true,
+            default_login_view: DefaultLoginView::Qr,
         };
         let ini = serialize_ini(&original);
         let parsed = parse_ini(&ini).unwrap();

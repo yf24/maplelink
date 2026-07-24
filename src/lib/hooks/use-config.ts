@@ -51,6 +51,7 @@ const KEY_MAP: Record<string, string> = {
   closeBehavior: "close_behavior",
   hideAccountNames: "hide_account_names",
   cafeMode: "cafe_mode",
+  defaultLoginView: "default_login_view",
   __reset__: "__reset__",
 };
 

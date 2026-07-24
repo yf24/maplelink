@@ -264,6 +264,7 @@ mod tests {
                         hide_account_names: false,
                         beanfun_rename_dismissed: false,
                         cafe_mode: false,
+                        default_login_view: crate::models::config::DefaultLoginView::Normal,
                     }
                 },
             )

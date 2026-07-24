@@ -120,6 +120,7 @@ fn arb_app_config() -> impl Strategy<Value = AppConfig> {
                 hide_account_names: false,
                 beanfun_rename_dismissed: false,
                 cafe_mode: false,
+                default_login_view: maplelink_lib::models::config::DefaultLoginView::Normal,
             }
         },
     )

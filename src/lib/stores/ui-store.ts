@@ -15,7 +15,12 @@ export interface UiState {
   gameRunning: boolean;
   /** When true, LoginPage won't auto-redirect to main even if authenticated. */
   addingSession: boolean;
-  /** Persisted login view so QR form survives page switches. */
+  /**
+   * Persisted login view so QR form survives page switches. Empty string
+   * means "not yet set this session" — LoginPage falls back to the user's
+   * configured default (config.defaultLoginView) only in that case, so a
+   * mid-session choice back to "normal" isn't overridden on remount.
+   */
   loginView: string;
   /** Persisted QR login state so it survives qr-viewer round-trip. */
   qrSessionId: string | null;
@@ -39,7 +44,7 @@ export const useUiStore = create<UiState>((set, get) => ({
   gamePid: null,
   gameRunning: false,
   addingSession: false,
-  loginView: "normal",
+  loginView: "",
   qrSessionId: null,
   qrData: null,
   setPage: (page) => {
